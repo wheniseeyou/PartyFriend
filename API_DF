@@ -1,0 +1,34 @@
+
+import urllib.request
+import json
+import pandas as pd
+import numpy as np
+
+#url 5分钟
+url = r'写自己申请的API'
+#url 1d日级别
+'''
+自己申请的API
+'''
+
+
+
+def get_stock_ticks(path):
+	#step1
+	stk_info_list = json.loads(urllib.request.urlopen(path).read())['result']
+	all_columns = ['date', 'open', 'high', 'low', 'close', 'volume']
+	#生成器
+	df = pd.DataFrame(columns=all_columns)
+	for s in stk_info_list:
+		l = len(df)
+		df.loc[l,:] = s.split(',')#每一次循环在df最后插入d o h l c v
+	#delete null
+	for i in ['open', 'high', 'low', 'close', 'volume']:
+		#fillna
+		df[i] = df[i].astype(float).fillna(0.0)
+	df = df[all_columns]
+	return df
+
+df = get_stock_ticks(url)
+print(df)
+
